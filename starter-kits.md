@@ -4,6 +4,7 @@
 - [Laravel Breeze](#laravel-breeze)
     - [Installation](#laravel-breeze-installation)
     - [Breeze & Inertia](#breeze-and-inertia)
+    - [Breeze & Next.js / API](#breeze-and-next)
 - [Laravel Jetstream](#laravel-jetstream)
 
 <a name="introduction"></a>
@@ -16,7 +17,9 @@ While you are welcome to use these starter kits, they are not required. You are 
 <a name="laravel-breeze"></a>
 ## Laravel Breeze
 
-Laravel Breeze is a minimal, simple implementation of all of Laravel's [authentication features](/docs/{{version}}/authentication), including login, registration, password reset, email verification, and password confirmation. Laravel Breeze's default view layer is made up of simple [Blade templates](/docs/{{version}}/blade) styled with [Tailwind CSS](https://tailwindcss.com). Breeze provides a wonderful starting point for beginning a fresh Laravel application.
+[Laravel Breeze](https://github.com/laravel/breeze) is a minimal, simple implementation of all of Laravel's [authentication features](/docs/{{version}}/authentication), including login, registration, password reset, email verification, and password confirmation. Laravel Breeze's default view layer is made up of simple [Blade templates](/docs/{{version}}/blade) styled with [Tailwind CSS](https://tailwindcss.com).
+
+Breeze provides a wonderful starting point for beginning a fresh Laravel application and is also great choice for projects that plan to take their Blade templates to the next level with [Laravel Livewire](https://laravel-livewire.com).
 
 <a name="laravel-breeze-installation"></a>
 ### Installation
@@ -34,7 +37,7 @@ php artisan migrate
 Once you have created a new Laravel application, you may install Laravel Breeze using Composer:
 
 ```bash
-composer require laravel/breeze --dev
+composer require laravel/breeze:1.9.2 
 ```
 
 After Composer has installed the Laravel Breeze package, you may run the `breeze:install` Artisan command. This command publishes the authentication views, routes, controllers, and other resources to your application. Laravel Breeze publishes all of its code to your application so that you have full control and visibility over its features and implementation. After Breeze is installed, you should also compile your assets so that your application's CSS file is available:
@@ -68,6 +71,24 @@ npm run dev
 php artisan migrate
 ```
 
+<a name="breeze-and-next"></a>
+### Breeze & Next.js / API
+
+Laravel Breeze can also scaffold an authentication API that is ready to authenticate modern JavaScript applications such as those powered by [Next](https://nextjs.org), [Nuxt](https://nuxt.com), and others. To get started, specify the `api` stack as your desired stack when executing the `breeze:install` Artisan command:
+
+```nothing
+php artisan breeze:install api
+
+php artisan migrate
+```
+
+During installation, Breeze will add a `FRONTEND_URL` environment variable to your application's `.env` file. This URL should be the URL of your JavaScript application. This will typically be `http://localhost:3000` during local development.
+
+<a name="next-reference-implementation"></a>
+#### Next.js Reference Implementation
+
+Finally, you are ready to pair this backend with the frontend of your choice. A Next reference implementation of the Breeze frontend is [available on GitHub](https://github.com/laravel/breeze-next). This frontend is maintained by Laravel and contains the same user interface as the traditional Blade and Inertia stacks provided by Breeze.
+
 <a name="laravel-jetstream"></a>
 ## Laravel Jetstream
 
@@ -75,4 +96,4 @@ While Laravel Breeze provides a simple and minimal starting point for building a
 
 Jetstream provides a beautifully designed application scaffolding for Laravel and includes login, registration, email verification, two-factor authentication, session management, API support via Laravel Sanctum, and optional team management. Jetstream is designed using [Tailwind CSS](https://tailwindcss.com) and offers your choice of [Livewire](https://laravel-livewire.com) or [Inertia.js](https://inertiajs.com) driven frontend scaffolding.
 
-Complete documentation for installing Laravel Jetstream can be found within the [official Jetstream documentation](https://jetstream.laravel.com/2.x/introduction.html).
+Complete documentation for installing Laravel Jetstream can be found within the [official Jetstream documentation](https://jetstream.laravel.com/introduction.html).

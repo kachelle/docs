@@ -94,6 +94,19 @@ PHP, Laravel, and other libraries often notify their users that some of their fe
 
     'deprecations' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
 
+    'channels' => [
+        ...
+    ]
+
+Or, you may define a log channel named `deprecations`. If a log channel with this name exists, it will always be used to log deprecations:
+
+    'channels' => [
+        'deprecations' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/php-deprecation-warnings.log'),
+        ],
+    ],
+
 <a name="building-log-stacks"></a>
 ## Building Log Stacks
 
@@ -234,7 +247,7 @@ If you would like to create an on-demand logging stack consisting of multiple ch
 <a name="on-demand-channels"></a>
 #### On-Demand Channels
 
-It is also possible to create an on-demand channel by providing the configuration at runtime without that configuration being present in your application's `logging` configuration file. To accomplish this, you may pass a configuration array to the the `Log` facade's `build` method:
+It is also possible to create an on-demand channel by providing the configuration at runtime without that configuration being present in your application's `logging` configuration file. To accomplish this, you may pass a configuration array to the `Log` facade's `build` method:
 
     use Illuminate\Support\Facades\Log;
 

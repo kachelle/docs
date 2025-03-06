@@ -54,7 +54,7 @@ If you would like to generate a [database migration](/docs/{{version}}/migration
 
     php artisan make:model Flight --migration
 
-You may generate various other types of classes when generating a model, such as factories, seeders, policies, and controllers. In addition, these options may be combined to create multiple classes at once:
+You may generate various other types of classes when generating a model, such as factories, seeders, policies, controllers, and form requests. In addition, these options may be combined to create multiple classes at once:
 
 ```bash
 # Generate a model and a FlightFactory class...
@@ -69,13 +69,17 @@ php artisan make:model Flight -s
 php artisan make:model Flight --controller
 php artisan make:model Flight -c
 
+# Generate a model, FlightController resource class, and form request classes...
+php artisan make:model Flight --controller --resource --requests
+php artisan make:model Flight -crR
+
 # Generate a model and a FlightPolicy class...
 php artisan make:model Flight --policy
 
 # Generate a model and a migration, factory, seeder, and controller...
 php artisan make:model Flight -mfsc
 
-# Shortcut to generate a model, migration, factory, seeder, policy, and controller...
+# Shortcut to generate a model, migration, factory, seeder, policy, controller, and form requests...
 php artisan make:model Flight --all
 
 # Generate a pivot model...
@@ -384,6 +388,8 @@ Flight::where('departed', true)
     ->each->update(['departed' => false]);
 ```
 
+You may filter the results based on the descending order of the `id` using the `lazyByIdDesc` method.
+
 <a name="cursors"></a>
 ### Cursors
 
@@ -599,7 +605,7 @@ Updates can also be performed against models that match a given query. In this e
           ->where('destination', 'San Diego')
           ->update(['delayed' => 1]);
 
-The `update` method expects an array of column and value pairs representing the columns that should be updated.
+The `update` method expects an array of column and value pairs representing the columns that should be updated. The `update` method returns the number of affected rows.
 
 > {note} When issuing a mass update via Eloquent, the `saving`, `saved`, `updating`, and `updated` model events will not be fired for the updated models. This is because the models are never actually retrieved when issuing a mass update.
 
@@ -783,7 +789,7 @@ In the example above, we are retrieving the model from the database before calli
 
 Of course, you may build an Eloquent query to delete all models matching your query's criteria. In this example, we will delete all flights that are marked as inactive. Like mass updates, mass deletes will not dispatch model events for the models that are deleted:
 
-    $deletedRows = Flight::where('active', 0)->delete();
+    $deleted = Flight::where('active', 0)->delete();
 
 > {note} When executing a mass delete statement via Eloquent, the `deleting` and `deleted` model events will not be dispatched for the deleted models. This is because the models are never actually retrieved when executing the delete statement.
 
@@ -940,6 +946,12 @@ Behind the scenes, the `model:prune` command will automatically detect "Prunable
         '--model' => [Address::class, Flight::class],
     ])->daily();
 
+If you wish to exclude certain models from being pruned while pruning all other detected models, you may use the `--except` option:
+
+    $schedule->command('model:prune', [
+        '--except' => [Address::class, Flight::class],
+    ])->daily();
+
 You may test your `prunable` query by executing the `model:prune` command with the `--pretend` option. When pretending, the `model:prune` command will simply report how many records would be pruned if the command were to actually run:
 
     php artisan model:prune --pretend
@@ -1019,7 +1031,7 @@ Global scopes allow you to add constraints to all queries for a given model. Lar
 <a name="writing-global-scopes"></a>
 #### Writing Global Scopes
 
-Writing a global scope is simple. First, define a class that implements the `Illuminate\Database\Eloquent\Scope` interface. Laravel does not have a conventional location that you should place scope classes, so you are free to place this class in any directory that you wish.
+Writing a global scope is simple. First, define a class that implements the `Illuminate\Database\Eloquent\Scope` interface. Laravel does not have a conventional location where you should place scope classes, so you are free to place this class in any directory that you wish.
 
 The `Scope` interface requires you to implement one method: `apply`. The `apply` method may add `where` constraints or other types of clauses to the query as needed:
 
@@ -1422,7 +1434,7 @@ When models are being created within a database transaction, you may want to ins
 <a name="muting-events"></a>
 ### Muting Events
 
-You may occasionally need to temporarily "mute" all events fired by a model. You may achieve this using the `withoutEvents` method. The `withoutEvents` method accepts a closure as its only argument. Any code executed within this closure will not dispatch model events. For example, the following example will fetch and delete an `App\Models\User` instance without dispatching any model events. Any value returned by the closure will be returned by the `withoutEvents` method:
+You may occasionally need to temporarily "mute" all events fired by a model. You may achieve this using the `withoutEvents` method. The `withoutEvents` method accepts a closure as its only argument. Any code executed within this closure will not dispatch model events, and any value returned by the closure will be returned by the `withoutEvents` method:
 
     use App\Models\User;
 

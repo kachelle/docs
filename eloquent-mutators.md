@@ -7,6 +7,7 @@
 - [Attribute Casting](#attribute-casting)
     - [Array & JSON Casting](#array-and-json-casting)
     - [Date Casting](#date-casting)
+    - [Enum Casting](#enum-casting)
     - [Encrypted Casting](#encrypted-casting)
     - [Query Time Casting](#query-time-casting)
 - [Custom Casts](#custom-casts)
@@ -118,6 +119,7 @@ Attribute casting provides functionality similar to accessors and mutators witho
 The `$casts` property should be an array where the key is the name of the attribute being cast and the value is the type you wish to cast the column to. The supported cast types are:
 
 <div class="content-list" markdown="1">
+
 - `array`
 - `AsStringable::class`
 - `boolean`
@@ -126,7 +128,7 @@ The `$casts` property should be an array where the key is the name of the attrib
 - `datetime`
 - `immutable_date`
 - `immutable_datetime`
-- `decimal:<digits>`
+- `decimal:`<code>&lt;digits&gt;</code>
 - `double`
 - `encrypted`
 - `encrypted:array`
@@ -138,6 +140,7 @@ The `$casts` property should be an array where the key is the name of the attrib
 - `real`
 - `string`
 - `timestamp`
+
 </div>
 
 To demonstrate attribute casting, let's cast the `is_admin` attribute, which is stored in our database as an integer (`0` or `1`) to a boolean value:
@@ -326,10 +329,36 @@ By default, the `date` and `datetime` casts will serialize dates to a UTC ISO-86
 
 If a custom format is applied to the `date` or `datetime` cast, such as `datetime:Y-m-d H:i:s`, the inner timezone of the Carbon instance will be used during date serialization. Typically, this will be the timezone specified in your application's `timezone` configuration option.
 
+<a name="enum-casting"></a>
+### Enum Casting
+
+> {note} Enum casting is only available for PHP 8.1+.
+
+Eloquent also allows you to cast your attribute values to PHP enums. To accomplish this, you may specify the attribute and enum you wish to cast in your model's `$casts` property array:
+
+    use App\Enums\ServerStatus;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'status' => ServerStatus::class,
+    ];
+
+Once you have defined the cast on your model, the specified attribute will be automatically cast to and from an enum when you interact with the attribute:
+
+    if ($server->status == ServerStatus::provisioned) {
+        $server->status = ServerStatus::ready;
+
+        $server->save();
+    }
+
 <a name="encrypted-casting"></a>
 ### Encrypted Casting
 
-The `encrypted` cast will encrypt a model's attribute value using Laravel's built-in [encryption](/docs/{{version}}/encryption) features. In addition, the `encrypted:array`, `encrypted:collection`, and `encrypted:object` casts work like their unencrypted counterparts; however, as you might expect, the underlying value is encrypted when stored in your database.
+The `encrypted` cast will encrypt a model's attribute value using Laravel's built-in [encryption](/docs/{{version}}/encryption) features. In addition, the `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, and `AsEncryptedCollection` casts work like their unencrypted counterparts; however, as you might expect, the underlying value is encrypted when stored in your database.
 
 As the final length of the encrypted text is not predictable and is longer than its plain text counterpart, make sure the associated database column is of `TEXT` type or larger. In addition, since the values are encrypted in the database, you will not be able to query or search encrypted attribute values.
 
